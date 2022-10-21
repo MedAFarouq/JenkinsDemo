@@ -17,23 +17,23 @@ pipeline {
                 script {
                     if (isUnix()) {
                         //update Salesforce CLI
-                        update = sh(script: "${env.toolbelt} update")
+                        update = sh(script: "${env.SFDX_CLI} update")
                         //Login to Prod using connected app consumer key, user name, prod url and OpenSSL certificate and key
                         //test
-                        login = sh(returnStatus: true, script: "${env.toolbelt} auth:jwt:grant --clientid 3MVG9WtWSKUDG.x4A4I1E1o5ll5tjOK71TFl3t.UvNsF2btB6WTVvUfplndUVu9uHmVaQV4WfapwP8UNjJkV8 --username mafarouq@leyton.com --jwtkeyfile ${production_jwt_key_file} --loglevel DEBUG --setdefaultdevhubusername --instanceurl ${env.SFDX_PROD_URL} --setalias HubOrg")
+                        login = sh(returnStatus: true, script: "${env.SFDX_CLI} auth:jwt:grant --clientid 3MVG9WtWSKUDG.x4A4I1E1o5ll5tjOK71TFl3t.UvNsF2btB6WTVvUfplndUVu9uHmVaQV4WfapwP8UNjJkV8 --username mafarouq@leyton.com --jwtkeyfile ${production_jwt_key_file} --loglevel DEBUG --setdefaultdevhubusername --instanceurl ${env.SFDX_PROD_URL} --setalias HubOrg")
                         //login = sh("test")
                         //Create scratchOrg from Prod
-                        scratchOrg = sh(returnStatus: true, script: "${env.toolbelt} force:org:create --targetdevhubusername HubOrg --setdefaultusername --definitionfile config/project-scratch-def.json --setalias ciorg --wait 10 --durationdays 1")
+                        scratchOrg = sh(returnStatus: true, script: "${env.SFDX_CLI} force:org:create --targetdevhubusername HubOrg --setdefaultusername --definitionfile config/project-scratch-def.json --setalias ciorg --wait 10 --durationdays 1")
                         if (scratchOrg != 0) {
                             error 'Salesforce scratch org creation failed.'
                         }	
                     }else{
                         //update Salesforce CLI
-                        update = bat(script: "${env.toolbelt} update")
+                        update = bat(script: "${env.SFDX_CLI} update")
                         //Login to Prod using connected app consumer key, user name, prod url and OpenSSL certificate and key
-                        login = bat(returnStatus: true, script: "${env.toolbelt} auth:jwt:grant --clientid ${PROD_CONNECTED_APP_CONSUMER_KEY} --username ${PROD_USER} --jwtkeyfile ${production_jwt_key_file} --loglevel DEBUG --setdefaultdevhubusername --instanceurl ${env.SFDX_PROD_URL} --setalias HubOrg")
+                        login = bat(returnStatus: true, script: "${env.SFDX_CLI} auth:jwt:grant --clientid ${PROD_CONNECTED_APP_CONSUMER_KEY} --username ${PROD_USER} --jwtkeyfile ${production_jwt_key_file} --loglevel DEBUG --setdefaultdevhubusername --instanceurl ${env.SFDX_PROD_URL} --setalias HubOrg")
                         //Create scratchOrg from Prod
-                        scratchOrg = bat(returnStatus: true, script: "${env.toolbelt} force:org:create --targetdevhubusername HubOrg --setdefaultusername --definitionfile config/project-scratch-def.json --setalias ciorg --wait 10 --durationdays 1")
+                        scratchOrg = bat(returnStatus: true, script: "${env.SFDX_CLI} force:org:create --targetdevhubusername HubOrg --setdefaultusername --definitionfile config/project-scratch-def.json --setalias ciorg --wait 10 --durationdays 1")
                         if (scratchOrg != 0) {
                             error 'Salesforce scratch org creation failed.'
                         }
@@ -62,19 +62,19 @@ pipeline {
                     if (isUnix()) {
                         try{
                             //Push changes from Git Lab to scratch org
-                            push = sh (returnStatus: true, script: "${env.toolbelt} force:source:deploy -m "+classes+" --targetusername ciorg")
+                            push = sh (returnStatus: true, script: "${env.SFDX_CLI} force:source:deploy -m "+classes+" --targetusername ciorg")
                         }catch(err){
                             //Delete Scratch org
-                            logout = sh (returnStatus: true, script: "${env.toolbelt} force:org:delete -p -u ciorg")
+                            logout = sh (returnStatus: true, script: "${env.SFDX_CLI} force:org:delete -p -u ciorg")
                             error 'Push to scratch org creation failed.'
                         }
                     }else{
                          try{
                             //Push changes from Git Lab to scratch org
-                            push = bat (returnStatus: true, script: "${env.toolbelt} force:source:push --targetusername ciorg")
+                            push = bat (returnStatus: true, script: "${env.SFDX_CLI} force:source:push --targetusername ciorg")
                         }catch(err){
                             //Delete Scratch org
-                            logout = bat (returnStatus: true, script: "${env.toolbelt} force:org:delete -p -u ciorg")
+                            logout = bat (returnStatus: true, script: "${env.SFDX_CLI} force:org:delete -p -u ciorg")
                             error 'Push to scratch org creation failed.'
                         } 
                     }
@@ -87,19 +87,19 @@ pipeline {
                     if (isUnix()) {
                         try{
                             //Run tests in scratch org
-                            testres = sh (returnStdout: true, script:"${env.toolbelt} force:apex:test:run --targetusername ciorg --wait 10 --classnames ${env.SFDX_TEST_CLASSES} -c -r human")
+                            testres = sh (returnStdout: true, script:"${env.SFDX_CLI} force:apex:test:run --targetusername ciorg --wait 10 --classnames ${env.SFDX_TEST_CLASSES} -c -r human")
                         }catch(err){
                             //Delete Scratch org
-                            logout = sh (returnStdout: true, script: "${env.toolbelt} force:org:delete -p -u ciorg")
+                            logout = sh (returnStdout: true, script: "${env.SFDX_CLI} force:org:delete -p -u ciorg")
                             error 'Scratch org tests failed.'
                         }
                     }else{
                          try{
                             //Run tests in scratch org
-                            testres = bat (returnStdout: true, script:"${env.toolbelt} force:apex:test:run --targetusername ciorg --wait 10 --classnames ${env.SFDX_TEST_CLASSES} -c -r human")
+                            testres = bat (returnStdout: true, script:"${env.SFDX_CLI} force:apex:test:run --targetusername ciorg --wait 10 --classnames ${env.SFDX_TEST_CLASSES} -c -r human")
                         }catch(err){
                             //Delete Scratch org
-                            logout = bat (returnStdout: true, script: "${env.toolbelt} force:org:delete -p -u ciorg")
+                            logout = bat (returnStdout: true, script: "${env.SFDX_CLI} force:org:delete -p -u ciorg")
                             error 'Scratch org tests failed.'
                         }
                     }
@@ -142,29 +142,29 @@ pipeline {
                                         classes = classes + ","
                             }
                             println classes
-                            deployResult = sh (returnStdout: true, script: "${env.toolbelt} force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_TEST_CLASSES}\" --targetusername SandBox")
+                            deployResult = sh (returnStdout: true, script: "${env.SFDX_CLI} force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_TEST_CLASSES}\" --targetusername SandBox")
                             //Log out from SnadBox
-                            logout = sh (returnStatus: true, script: "echo y | ${env.toolbelt} auth:logout --targetusername SandBox ")
+                            logout = sh (returnStatus: true, script: "echo y | ${env.SFDX_CLI} auth:logout --targetusername SandBox ")
                             println 'Deploy succeed.'
                         }catch(err){
                             //Show tests result if deploy fail
                             println testres
                             //Log out from SnadBox
-                            logout = sh (returnStatus: true, script: "echo y | ${env.toolbelt} auth:logout --targetusername SandBox ")
+                            logout = sh (returnStatus: true, script: "echo y | ${env.SFDX_CLI} auth:logout --targetusername SandBox ")
                             error 'Deploy failed.'
                         }
                     }else{
                         try{
                             //Deploy and check code coverage in SandBox
-                            deployResult = bat (returnStdout: true, script: "${env.toolbelt} force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_TEST_CLASSES}\"")
+                            deployResult = bat (returnStdout: true, script: "${env.SFDX_CLI} force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_TEST_CLASSES}\"")
                             //Log out from SnadBox
-                            logout = bat (returnStatus: true, script: "echo y | ${env.toolbelt} auth:logout --targetusername SandBox ")
+                            logout = bat (returnStatus: true, script: "echo y | ${env.SFDX_CLI} auth:logout --targetusername SandBox ")
                             println 'Deploy succeed.'
                         }catch(err){
                             //Show tests result if deploy fail
                             println testres
                             //Log out from SnadBox
-                            logout = bat (returnStatus: true, script: "echo y | ${env.toolbelt} auth:logout --targetusername SandBox ")
+                            logout = bat (returnStatus: true, script: "echo y | ${env.SFDX_CLI} auth:logout --targetusername SandBox ")
                             error 'Deploy failed.'
                         }
                     }
