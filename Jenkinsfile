@@ -159,10 +159,11 @@ pipeline {
                         try{
                             //Deploy and check code coverage in SandBox
 				println '1111111111111111111111111111111&&'
-                            deployResult = bat (returnStdout: true, script:  "\"${env.SFDX_CLI}\" force:source:deploy -m "+classes+" --targetusername HubOrg"/*"\"${env.SFDX_CLI}\" force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_CLASSES}\" --targetusername HubOrg"*/)
-                           println '2222222222222222222222222222222222222'
+                           // deployResult = bat (returnStdout: true, script:  "\"${env.SFDX_CLI}\" force:source:deploy -m "+classes+" --targetusername HubOrg"/*"\"${env.SFDX_CLI}\" force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_CLASSES}\" --targetusername HubOrg"*/)
+                          logout = bat (returnStatus: true, script: "echo y | \"${env.SFDX_CLI}\" auth:logout --targetusername HubOrg ")
+				println '2222222222222222222222222222222222222'
 				//Log out from SnadBox
-                            logout = bat (returnStatus: true, script: "echo y | \"${env.SFDX_CLI}\" auth:logout --targetusername HubOrg ")
+                           // logout = bat (returnStatus: true, script: "echo y | \"${env.SFDX_CLI}\" auth:logout --targetusername HubOrg ")
 				println '3333333333333333333333333333'
 			    println '********* ' + deployResult
                             println 'Deploy succeed.'
