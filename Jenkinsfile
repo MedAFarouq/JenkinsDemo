@@ -142,7 +142,7 @@ pipeline {
                                         classes = classes + ","
                             }
                             println classes
-                            deployResult = sh (returnStdout: true, script: "$\"${env.SFDX_CLI}\" force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_TEST_CLASSES}\" --targetusername SandBox")
+                            deployResult = sh (returnStdout: true, script: "\"${env.SFDX_CLI}\" force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_TEST_CLASSES}\" --targetusername SandBox")
                             //Log out from SnadBox
                             logout = sh (returnStatus: true, script: "echo y | \"${env.SFDX_CLI}\" auth:logout --targetusername SandBox ")
                             println 'Deploy succeed.'
