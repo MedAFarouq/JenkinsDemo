@@ -29,7 +29,7 @@ pipeline {
                         }	
                     }else{
                         //update Salesforce CLI
-                        update = bat(script: "${env.SFDX_CLI} update")
+                        update = bat(script: "\"${env.SFDX_CLI}\" update")
                         //Login to Prod using connected app consumer key, user name, prod url and OpenSSL certificate and key
                         login = bat(returnStatus: true, script: "${env.SFDX_CLI} auth:jwt:grant --clientid ${PROD_CONNECTED_APP_CONSUMER_KEY} --username ${PROD_USER} --jwtkeyfile ${production_jwt_key_file} --loglevel DEBUG --setdefaultdevhubusername --instanceurl ${env.SFDX_PROD_URL} --setalias HubOrg")
                         //Create scratchOrg from Prod
