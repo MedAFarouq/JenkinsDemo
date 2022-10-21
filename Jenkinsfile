@@ -17,7 +17,7 @@ pipeline {
                 script {
                     if (isUnix()) {
                         //update Salesforce CLI
-                        update = sh(script: "\#${env.SFDX_CLI}\" update")
+                        update = sh(script: "\"{env.SFDX_CLI}\" update")
                         //Login to Prod using connected app consumer key, user name, prod url and OpenSSL certificate and key
                         //test
                         login = sh(returnStatus: true, script: "${env.SFDX_CLI} auth:jwt:grant --clientid 3MVG9WtWSKUDG.x4A4I1E1o5ll5tjOK71TFl3t.UvNsF2btB6WTVvUfplndUVu9uHmVaQV4WfapwP8UNjJkV8 --username mafarouq@leyton.com --jwtkeyfile ${production_jwt_key_file} --loglevel DEBUG --setdefaultdevhubusername --instanceurl ${env.SFDX_PROD_URL} --setalias HubOrg")
