@@ -71,7 +71,7 @@ pipeline {
                     }else{
                          try{
                             //Push changes from Git Lab to scratch org
-                            push = bat (returnStatus: true, script: "\"${env.SFDX_CLI}\" force:source:push --targetusername ciorg")
+                            push = bat (returnStatus: true, script:  "\"${env.SFDX_CLI}\" force:source:deploy -m "+classes+" --targetusername ciorg")
                         }catch(err){
                             //Delete Scratch org
                             logout = bat (returnStatus: true, script: "\"${env.SFDX_CLI}\" force:org:delete -p -u ciorg")
@@ -142,29 +142,31 @@ pipeline {
                                         classes = classes + ","
                             }
                             println classes
-                            deployResult = sh (returnStdout: true, script: "\"${env.SFDX_CLI}\" force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_TEST_CLASSES}\" --targetusername SandBox")
+                            deployResult = sh (returnStdout: true, script: "\"${env.SFDX_CLI}\" force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_TEST_CLASSES}\" --targetusername HubOrg")
                             //Log out from SnadBox
-                            logout = sh (returnStatus: true, script: "echo y | \"${env.SFDX_CLI}\" auth:logout --targetusername SandBox ")
-                            println 'Deploy succeed.'
+                            logout = sh (returnStatus: true, script: "echo y | \"${env.SFDX_CLI}\" auth:logout --targetusername HubOrg ")
+                             println '********* ' + deployResult
+			     println 'Deploy succeed.'
                         }catch(err){
                             //Show tests result if deploy fail
                             println testres
                             //Log out from SnadBox
-                            logout = sh (returnStatus: true, script: "echo y |\"${env.SFDX_CLI}\" auth:logout --targetusername SandBox ")
+                            logout = sh (returnStatus: true, script: "echo y |\"${env.SFDX_CLI}\" auth:logout --targetusername HubOrg ")
                             error 'Deploy failed.'
                         }
                     }else{
                         try{
                             //Deploy and check code coverage in SandBox
-                            deployResult = bat (returnStdout: true, script: "\"${env.SFDX_CLI}\" force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_TEST_CLASSES}\"")
+                            deployResult = bat (returnStdout: true, script: "\"${env.SFDX_CLI}\" force:source:deploy -m "+classes+" -u ${PROD_USER} -l RunSpecifiedTests -r \"${env.SFDX_TEST_CLASSES}\" --targetusername HubOrg")
                             //Log out from SnadBox
-                            logout = bat (returnStatus: true, script: "echo y | \"${env.SFDX_CLI}\" auth:logout --targetusername SandBox ")
+                            logout = bat (returnStatus: true, script: "echo y | \"${env.SFDX_CLI}\" auth:logout --targetusername HubOrg ")
+			    println '********* ' + deployResult
                             println 'Deploy succeed.'
                         }catch(err){
                             //Show tests result if deploy fail
                             println testres
                             //Log out from SnadBox
-                            logout = bat (returnStatus: true, script: "echo y | \"${env.SFDX_CLI}\" auth:logout --targetusername SandBox ")
+                            logout = bat (returnStatus: true, script: "echo y | \"${env.SFDX_CLI}\" auth:logout --targetusername HubOrg ")
                             error 'Deploy failed.'
                         }
                     }
