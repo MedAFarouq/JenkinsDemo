@@ -106,7 +106,7 @@ pipeline {
                 }
             }
         }
-       /* stage('Auth to Prod') {
+       stage('Auth to Prod') {
             steps {
                 script {
                     if (isUnix()) {
@@ -115,18 +115,18 @@ pipeline {
 				        //Log out from Prod
 				        logout = sh (returnStatus: true, script: "echo y | ${env.toolbelt} auth:logout --targetusername HubOrg")
 				        //Log in to SandBox
-				        slogin = sh (returnStatus: true, script: "${env.toolbelt} auth:jwt:grant --clientid ${SANDBOX_CONNECTED_APP_CONSUMER_KEY} --username ${PROD_USER} --jwtkeyfile ${sandbox_jwt_key_file} --setdefaultdevhubusername --instanceurl ${env.SFDX_PROD_URL} --setalias SandBox")
+				        slogin = sh (returnStatus: true, script: "${env.toolbelt} auth:jwt:grant --clientid ${PROD_CONNECTED_APP_CONSUMER_KEY} --username ${PROD_USER} --jwtkeyfile ${sandbox_jwt_key_file} --setdefaultdevhubusername --instanceurl ${env.SFDX_PROD_URL} --setalias HubOrg")
                     }else{
                         //Delete Scratch org
 				        logout = bat (returnStatus: true, script: "${env.toolbelt} force:org:delete -p -u ciorg")
 				        //Log out from Prod
 				        logout = bat (returnStatus: true, script: "echo y | ${env.toolbelt} auth:logout --targetusername HubOrg")
 				        //Log in to SandBox
-				        slogin = bat (returnStatus: true, script: "${env.toolbelt} auth:jwt:grant --clientid ${SANDBOX_CONNECTED_APP_CONSUMER_KEY} --username ${PROD_USER} --jwtkeyfile ${sandbox_jwt_key_file} --setdefaultdevhubusername --instanceurl ${env.SFDX_PROD_URL} --setalias SandBox")
+				        slogin = bat (returnStatus: true, script: "${env.toolbelt} auth:jwt:grant --clientid ${PROD_CONNECTED_APP_CONSUMER_KEY} --username ${PROD_USER} --jwtkeyfile ${sandbox_jwt_key_file} --setdefaultdevhubusername --instanceurl ${env.SFDX_PROD_URL} --setalias HubOrg")
                     }
                 }
             }
-        }*/
+        }
         stage('Deploy to Prod') {
             steps {
                 script {
