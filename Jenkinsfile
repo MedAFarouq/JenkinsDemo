@@ -167,6 +167,7 @@ pipeline {
                             println 'Deploy succeed.'
                         }catch(err){
                             //Show tests result if deploy fail
+				println '********* ' + deployResult
                             println testres
                             //Log out from SnadBox
                             logout = bat (returnStatus: true, script: "echo y | \"${env.SFDX_CLI}\" auth:logout --targetusername HubOrg ")
