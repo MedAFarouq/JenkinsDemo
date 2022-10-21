@@ -130,6 +130,7 @@ pipeline {
         stage('Deploy to Prod') {
             steps {
                 script {
+			def deployResult
                     if (isUnix()) {
                         try{
                             //Deploy and check code coverage in SandBox
