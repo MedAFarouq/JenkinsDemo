@@ -2,8 +2,8 @@ pipeline {
     agent any
     environment {
         production_jwt_key_file = credentials('SFDX-PRODUCTION-KEY') 
-        PROD_CONNECTED_APP_CONSUMER_KEY = credentials('sf-sfdx-app-consumer-key-production2') 
-        PROD_USER = credentials('sf-sfdx-user-production2')  
+        PROD_CONNECTED_APP_CONSUMER_KEY = credentials('sf-sfdx-app-consumer-key-production') 
+        PROD_USER = credentials('sf-sfdx-user-production')  
         
     }
     stages {
